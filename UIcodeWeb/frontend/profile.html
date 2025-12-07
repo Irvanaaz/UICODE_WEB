@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Profil Saya - UICODE</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap");
+
+      :root {
+        --bg-color: #0f0f11;
+        --card-bg: #18181b;
+        --primary: #00ff75;
+        --text-main: #ffffff;
+        --text-muted: #a1a1aa;
+        --danger: #ff4757;
+        --warning: #f1c40f;
+      }
+
+      /* --- GLOBAL --- */
+      body {
+        font-family: "Outfit", sans-serif;
+        background-color: var(--bg-color);
+        color: var(--text-main);
+        margin: 0;
+        padding-bottom: 50px;
+        overflow-x: hidden;
+      }
+
+      /* BACKGROUND ELEMENT (Efek Glow) */
+      body::before {
+        content: "";
+        position: fixed;
+        top: -20%;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(
+          circle,
+          rgba(0, 255, 117, 0.1) 0%,
+          transparent 70%
+        );
+        z-index: -1;
+        pointer-events: none;
+      }
+
+      /* --- NAVBAR --- */
+      nav {
+        background: rgba(24, 24, 27, 0.8);
+        backdrop-filter: blur(12px);
+        padding: 0 5%;
+        height: 70px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+      }
+      .brand {
+        font-weight: 800;
+        font-size: 1.8rem;
+        color: #fff;
+        text-decoration: none;
+      }
+      .brand span {
+        color: var(--primary);
+      }
+      .btn-home {
+        color: var(--text-muted);
+        text-decoration: none;
+        font-weight: 600;
+        transition: 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .btn-home:hover {
+        color: white;
+      }
+
+      /* --- PROFILE HEADER --- */
+      .profile-header {
+        max-width: 900px;
+        margin: 40px auto;
+        text-align: center;
+        padding: 0 20px;
+      }
+
+      .avatar-container {
+        position: relative;
+        width: 120px;
+        height: 120px;
+        margin: 0 auto 20px;
+      }
+
+      .avatar-img {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid var(--primary);
+        box-shadow: 0 0 20px rgba(0, 255, 117, 0.2);
+      }
+
+      .btn-edit-avatar {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        background: var(--card-bg);
+        border: 1px solid var(--primary);
+        color: var(--primary);
+        border-radius: 50%;
+        width: 35px;
+        height: 35px;
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: 0.3s;
+      }
+      .btn-edit-avatar:hover {
+        background: var(--primary);
+        color: black;
+      }
+
+      .user-name {
+        font-size: 2rem;
+        font-weight: 800;
+        margin: 0;
+      }
+      .user-role {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        margin-top: 5px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+      }
+
+      /* STATS BOX */
+      .stats-container {
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+        margin-top: 30px;
+      }
+      .stat-box {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 15px 30px;
+        border-radius: 15px;
+        min-width: 100px;
+      }
+      .stat-num {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: white;
+        display: block;
+      }
+      .stat-label {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+      }
+
+      /* --- TABS --- */
+      .tabs-container {
+        max-width: 900px;
+        margin: 40px auto 20px;
+        padding: 0 20px;
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+      }
+
+      .tab-btn {
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: var(--text-muted);
+        padding: 10px 25px;
+        border-radius: 50px;
+        cursor: pointer;
+        font-family: "Outfit", sans-serif;
+        font-weight: 600;
+        transition: 0.3s;
+      }
+
+      .tab-btn:hover {
+        border-color: white;
+        color: white;
+      }
+
+      .tab-btn.active {
+        background: var(--primary);
+        color: black;
+        border-color: var(--primary);
+        box-shadow: 0 0 15px rgba(0, 255, 117, 0.3);
+      }
+
+      /* --- GRID GALLERY --- */
+      .grid {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 25px;
+      }
+
+      /* Desain Kartu (Sama seperti Home) */
+      .card {
+        background: var(--card-bg);
+        border-radius: 20px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        transition: 0.4s;
+        display: flex;
+        flex-direction: column;
+      }
+      .card:hover {
+        transform: translateY(-5px);
+        border-color: rgba(255, 255, 255, 0.2);
+      }
+
+      .card-preview {
+        height: 180px;
+        background: black;
+        background-image: linear-gradient(#1a1a1a 1px, transparent 1px),
+          linear-gradient(90deg, #1a1a1a 1px, transparent 1px);
+        background-size: 20px 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        position: relative;
+      }
+
+      /* Badge Status */
+      .status-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 0.7rem;
+        font-weight: bold;
+        text-transform: uppercase;
+        z-index: 10;
+      }
+      .status-approved {
+        background: rgba(0, 255, 117, 0.2);
+        color: var(--primary);
+        border: 1px solid var(--primary);
+      }
+      .status-pending {
+        background: rgba(241, 196, 15, 0.2);
+        color: var(--warning);
+        border: 1px solid var(--warning);
+      }
+      .status-rejected {
+        background: rgba(255, 71, 87, 0.2);
+        color: var(--danger);
+        border: 1px solid var(--danger);
+      }
+
+      .card-info {
+        padding: 20px;
+      }
+      .card-title {
+        font-weight: bold;
+        font-size: 1.1rem;
+        margin-bottom: 5px;
+        color: white;
+        display: block;
+      }
+      .card-cat {
+        color: var(--primary);
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 800;
+      }
+
+      .card-stats {
+        display: flex;
+        gap: 15px;
+        margin-top: 10px;
+        font-size: 0.85rem;
+        color: var(--text-muted);
+      }
+      .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+
+      .shadow-host {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      /* Empty State */
+      .empty-state {
+        grid-column: 1 / -1;
+        text-align: center;
+        color: var(--text-muted);
+        padding: 50px;
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <a href="index.html" class="brand">UI<span>CODE</span></a>
+      <a href="index.html" class="btn-home">⬅ Back to Home</a>
+    </nav>
+
+    <div class="profile-header">
+      <div class="avatar-container">
+        <img src="" id="userAvatar" class="avatar-img" />
+        <button
+          class="btn-edit-avatar"
+          onclick="changeAvatar()"
+          title="Ganti Avatar"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            width="16"
+            height="16"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M12 20h9"></path>
+            <path
+              d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"
+            ></path>
+          </svg>
+        </button>
+      </div>
+      <h1 class="user-name" id="userName">Loading...</h1>
+      <div class="user-role">Member</div>
+
+      <div class="stats-container">
+        <div class="stat-box">
+          <span class="stat-num" id="total-projects">0</span>
+          <span class="stat-label">Projects</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-num" id="total-likes">0</span>
+          <span class="stat-label">Total Likes</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tabs-container">
+      <button class="tab-btn active" onclick="filterTab('approved', this)">
+        Approved ✅
+      </button>
+      <button class="tab-btn" onclick="filterTab('pending', this)">
+        Pending ⏳
+      </button>
+      <button class="tab-btn" onclick="filterTab('rejected', this)">
+        Rejected ❌
+      </button>
+    </div>
+
+    <div class="grid" id="myGrid">
+      <div class="empty-state">Memuat data...</div>
+    </div>
+
+    <script>
+      const API_URL = "http://127.0.0.1:8000";
+      const token = localStorage.getItem("uicode_token");
+      let myComponents = [];
+
+      if (!token) window.location.href = "login.html";
+
+      // 1. LOAD PROFIL & DATA
+      async function loadProfile() {
+        // Decode token buat nama
+        try {
+          const payload = JSON.parse(atob(token.split(".")[1]));
+          document.getElementById("userName").innerText =
+            payload.sub.split("@")[0];
+          // Default avatar kalau belum diset
+          document.getElementById("userAvatar").src =
+            "https://ui-avatars.com/api/?background=random&name=" + payload.sub;
+        } catch (e) {
+          localStorage.removeItem("uicode_token");
+        }
+
+        // Fetch Data dari API
+        try {
+          const res = await fetch(`${API_URL}/users/me/components`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          myComponents = await res.json();
+
+          // Hitung Statistik
+          calculateStats();
+
+          // Update Avatar Asli dari DB (ambil dari salah satu komponen owner avatar, atau endpoint user detail nanti)
+          // Karena endpoint khusus user detail belum ada, kita pakai trik sederhana:
+          // Jika user pernah upload avatar, data itu ada di `owner.avatar_url` pada komponen.
+          // Tapi cara paling aman pakai endpoint `get_current_user` (nanti bisa diupdate).
+          // Untuk sekarang kita pakai update avatar manual via JS dulu.
+        } catch (err) {
+          console.error("Gagal load data", err);
+        }
+
+        // Default Tab: Approved
+        filterTab("approved", document.querySelector(".tab-btn"));
+      }
+
+      // 2. HITUNG STATISTIK (JS Client Side)
+      function calculateStats() {
+        const totalProjects = myComponents.length;
+
+        // Hitung Total Like dari semua komponen
+        // Backend sudah kirim field 'likes_count' berkat update di main.py tadi
+        const totalLikes = myComponents.reduce(
+          (acc, curr) => acc + (curr.likes_count || 0),
+          0
+        );
+
+        document.getElementById("total-projects").innerText = totalProjects;
+        document.getElementById("total-likes").innerText = totalLikes;
+      }
+
+      // 3. FILTER TAB & RENDER
+      function filterTab(status, btn) {
+        // Update UI Tab
+        document
+          .querySelectorAll(".tab-btn")
+          .forEach((b) => b.classList.remove("active"));
+        if (btn) btn.classList.add("active");
+
+        const grid = document.getElementById("myGrid");
+        grid.innerHTML = "";
+
+        const filtered = myComponents.filter((item) => item.status === status);
+
+        if (filtered.length === 0) {
+          grid.innerHTML = `<div class="empty-state">Belum ada komponen di status <b>${status}</b>.</div>`;
+          return;
+        }
+
+        filtered.forEach((item) => {
+          const card = document.createElement("div");
+          card.className = "card";
+
+          // Tentukan warna badge
+          let statusClass = `status-${status}`;
+
+          card.innerHTML = `
+                    <div class="card-preview">
+                        <span class="status-badge ${statusClass}">${status}</span>
+                        <div class="shadow-host"></div>
+                    </div>
+                    <div class="card-info">
+                        <span class="card-cat">${item.category}</span>
+                        <div class="card-stats">
+                            <div class="stat-item">👁️ ${item.views_count}</div>
+                            <div class="stat-item">❤️ ${item.likes_count}</div>
+                        </div>
+                    </div>
+                `;
+
+          grid.appendChild(card);
+
+          // Shadow DOM
+          const host = card.querySelector(".shadow-host");
+          const shadow = host.attachShadow({ mode: "open" });
+          shadow.innerHTML = `<style>:host { display:flex; justify-content:center; align-items:center; width:100%; height:100%; } ${item.css_code}</style>${item.html_code}`;
+        });
+      }
+
+      // 4. GANTI AVATAR
+      async function changeAvatar() {
+        const newUrl = prompt(
+          "Masukkan Link Gambar Avatar (URL):",
+          "https://i.pravatar.cc/300"
+        );
+        if (newUrl) {
+          await fetch(`${API_URL}/users/me/avatar`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ avatar_url: newUrl }),
+          });
+          document.getElementById("userAvatar").src = newUrl;
+          alert("Avatar berhasil diupdate!");
+        }
+      }
+
+      loadProfile();
+    </script>
+  </body>
+</html>

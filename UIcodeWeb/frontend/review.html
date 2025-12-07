@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Review Code - Admin Console</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap");
+
+      /* --- GLOBAL STYLE --- */
+      body {
+        font-family: "Outfit", sans-serif;
+        background-color: #0f0f11;
+        color: white;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      /* --- NAVBAR --- */
+      nav {
+        background-color: #171717;
+        padding: 0 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #333;
+        height: 60px;
+        flex-shrink: 0;
+      }
+
+      .brand {
+        font-weight: 800;
+        font-size: 1.2rem;
+        color: #fff;
+        letter-spacing: 1px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+      .brand span {
+        color: #00ff75;
+      }
+
+      .req-info {
+        font-size: 0.85rem;
+        color: #aaa;
+        border-left: 1px solid #444;
+        padding-left: 15px;
+        display: flex;
+        gap: 15px;
+        align-items: center;
+      }
+      .user-tag {
+        color: white;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .cat-tag {
+        background: #333;
+        padding: 2px 8px;
+        border-radius: 4px;
+        color: #00ff75;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        font-weight: bold;
+      }
+
+      .nav-actions {
+        display: flex;
+        gap: 10px;
+      }
+      button {
+        cursor: pointer;
+        font-weight: 700;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 6px;
+        transition: 0.2s;
+        font-size: 0.9rem;
+      }
+
+      .btn-back {
+        background: transparent;
+        color: #aaa;
+        border: 1px solid #333;
+      }
+      .btn-back:hover {
+        color: white;
+        border-color: #555;
+      }
+
+      .btn-approve {
+        background-color: #00ff75;
+        color: black;
+      }
+      .btn-approve:hover {
+        background-color: #00cc5e;
+        box-shadow: 0 0 10px rgba(0, 255, 117, 0.4);
+      }
+
+      .btn-reject {
+        background-color: rgba(255, 71, 87, 0.1);
+        color: #ff4757;
+        border: 1px solid transparent;
+      }
+      .btn-reject:hover {
+        background-color: rgba(255, 71, 87, 0.2);
+        border-color: #ff4757;
+      }
+
+      /* --- WORKSPACE (SPLIT LAYOUT) --- */
+      .workspace {
+        display: flex;
+        flex: 1;
+        height: calc(100vh - 60px);
+      }
+
+      /* AREA KODE (KIRI 70%) */
+      .editor-pane {
+        width: 70%; /* PERMINTAAN KAMU: 70% */
+        background-color: #1e1e24;
+        display: flex;
+        flex-direction: column;
+        border-right: 1px solid #333;
+      }
+
+      /* Container HTML & CSS (Atas Bawah atau Kiri Kanan) */
+      /* Kita buat berdampingan agar memanfaatkan lebar 70% */
+      .code-container {
+        display: flex;
+        flex: 1;
+        height: 100%;
+      }
+
+      .code-box {
+        flex: 1; /* Bagi 2 rata antara HTML dan CSS */
+        display: flex;
+        flex-direction: column;
+        border-right: 1px solid #333;
+      }
+      .code-box:last-child {
+        border-right: none;
+      }
+
+      .code-header {
+        background: #252529;
+        padding: 8px 15px;
+        font-size: 0.75rem;
+        color: #888;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        border-bottom: 1px solid #333;
+        display: flex;
+        justify-content: space-between;
+      }
+
+      textarea {
+        flex: 1;
+        background-color: #131316;
+        color: #e0e0e0;
+        border: none;
+        padding: 15px;
+        font-family: "Consolas", "Courier New", monospace;
+        font-size: 14px;
+        resize: none;
+        outline: none;
+        line-height: 1.6;
+      }
+      textarea:focus {
+        background-color: #0f0f11;
+      }
+
+      /* AREA PREVIEW (KANAN 30%) */
+      .preview-pane {
+        width: 30%; /* SISANYA 30% */
+        background-color: #000;
+        background-image: linear-gradient(#1a1a1a 1px, transparent 1px),
+          linear-gradient(90deg, #1a1a1a 1px, transparent 1px);
+        background-size: 20px 20px;
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+      }
+
+      .status-bar {
+        position: absolute;
+        bottom: 15px;
+        right: 15px;
+        background: rgba(0, 0, 0, 0.8);
+        color: #aaa;
+        padding: 4px 10px;
+        border-radius: 4px;
+        font-size: 0.7rem;
+        font-weight: bold;
+        border: 1px solid #333;
+        pointer-events: none;
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <div class="brand">
+        UI<span>CODE</span> <span style="color: #555">/</span> REVIEW
+        <div class="req-info">
+          <div class="user-tag">👤 <span id="creatorName">...</span></div>
+          <span class="cat-tag" id="categoryName">...</span>
+          <span style="font-family: monospace; color: #666" id="reqId"
+            >#ID</span
+          >
+        </div>
+      </div>
+      <div class="nav-actions">
+        <button class="btn-back" onclick="window.location.href='admin.html'">
+          Cancel
+        </button>
+        <button class="btn-reject" onclick="processReview('reject')">
+          ✖ Reject
+        </button>
+        <button class="btn-approve" onclick="processReview('approve')">
+          ✔ Approve
+        </button>
+      </div>
+    </nav>
+
+    <div class="workspace">
+      <div class="editor-pane">
+        <div class="code-container">
+          <div class="code-box">
+            <div class="code-header">
+              <span>HTML</span>
+              <span style="color: #00ff75">Read Only</span>
+            </div>
+            <textarea id="htmlInput" readonly></textarea>
+          </div>
+
+          <div class="code-box">
+            <div class="code-header">
+              <span>CSS</span>
+              <span style="color: #3700ff">Read Only</span>
+            </div>
+            <textarea id="cssInput" readonly></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="preview-pane">
+        <iframe id="previewFrame"></iframe>
+        <div class="status-bar">LIVE PREVIEW</div>
+      </div>
+    </div>
+
+    <script>
+      const API_URL = "http://127.0.0.1:8000";
+      const token = localStorage.getItem("uicode_token");
+
+      // 1. Ambil ID dari URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const compId = urlParams.get("id");
+
+      if (!token || !compId) {
+        alert("Akses tidak valid.");
+        window.location.href = "admin.html";
+      }
+
+      // 2. Load Data Komponen
+      async function loadComponentData() {
+        try {
+          const res = await fetch(`${API_URL}/components/${compId}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+
+          if (!res.ok) throw new Error("Gagal mengambil data");
+
+          const data = await res.json();
+
+          // Isi Data ke Header
+          document.getElementById("reqId").innerText = `#${data.id}`;
+          document.getElementById("creatorName").innerText =
+            data.owner.username;
+          document.getElementById("categoryName").innerText = data.category;
+
+          // Isi Editor Kode
+          document.getElementById("htmlInput").value = data.html_code;
+          document.getElementById("cssInput").value = data.css_code;
+
+          // Update Preview
+          updatePreview(data.html_code, data.css_code);
+        } catch (err) {
+          alert("Error: " + err.message);
+          window.location.href = "admin.html";
+        }
+      }
+
+      // 3. Fungsi Preview Iframe (Center Content)
+      function updatePreview(html, css) {
+        const previewFrame = document.getElementById("previewFrame");
+        const content = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <style>
+                        body { 
+                            margin: 0; 
+                            display: flex; 
+                            justify-content: center; 
+                            align-items: center; 
+                            min-height: 100vh; 
+                            font-family: 'Segoe UI', sans-serif;
+                            background-color: transparent;
+                            overflow: hidden;
+                        }
+                        /* Inject CSS User */
+                        ${css}
+                    </style>
+                </head>
+                <body>
+                    ${html}
+                </body>
+                </html>`;
+        const doc =
+          previewFrame.contentDocument || previewFrame.contentWindow.document;
+        doc.open();
+        doc.write(content);
+        doc.close();
+      }
+
+      // 4. Proses Approve/Reject
+      async function processReview(action) {
+        if (!confirm(`Yakin ingin ${action.toUpperCase()} request ini?`))
+          return;
+
+        try {
+          const res = await fetch(
+            `${API_URL}/admin/review/${compId}?action=${action}`,
+            {
+              method: "PUT",
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
+
+          if (res.ok) {
+            // Beri feedback visual sedikit
+            alert(`✅ Sukses! Request #${compId} telah di-${action}.`);
+            window.location.href = "admin.html";
+          } else {
+            alert("❌ Gagal memproses request.");
+          }
+        } catch (err) {
+          alert("Error koneksi.");
+        }
+      }
+
+      loadComponentData();
+    </script>
+  </body>
+</html>

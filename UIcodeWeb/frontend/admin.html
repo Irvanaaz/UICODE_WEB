@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard - UICODE</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap");
+
+      :root {
+        --bg-color: #0f0f11;
+        --sidebar-bg: #131316;
+        --card-bg: #1c1c1f;
+        --primary: #00ff75;
+        --text-main: #ffffff;
+        --text-muted: #a1a1aa;
+      }
+
+      body {
+        font-family: "Outfit", sans-serif;
+        background-color: var(--bg-color);
+        color: var(--text-main);
+        margin: 0;
+        display: flex;
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      /* SIDEBAR */
+      .sidebar {
+        width: 280px;
+        background-color: var(--sidebar-bg);
+        border-right: 1px solid rgba(255, 255, 255, 0.05);
+        display: flex;
+        flex-direction: column;
+        padding: 30px 20px;
+      }
+      .logo {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: white;
+        margin-bottom: 50px;
+      }
+      .logo span {
+        color: var(--primary);
+        text-shadow: 0 0 15px rgba(0, 255, 117, 0.4);
+      }
+
+      .menu-item {
+        padding: 12px 15px;
+        margin-bottom: 8px;
+        border-radius: 12px;
+        cursor: pointer;
+        color: var(--text-muted);
+        transition: 0.3s;
+        font-weight: 500;
+        display: flex;
+        justify-content: space-between;
+      }
+      .menu-item:hover,
+      .menu-item.active {
+        background-color: rgba(255, 255, 255, 0.05);
+        color: white;
+      }
+      .menu-item.active {
+        border-left: 3px solid var(--primary);
+      }
+
+      .badge {
+        background-color: #ff4757;
+        color: white;
+        padding: 2px 8px;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 800;
+        animation: pulse 2s infinite;
+      }
+      @keyframes pulse {
+        0% {
+          box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.7);
+        }
+        70% {
+          box-shadow: 0 0 0 10px rgba(255, 71, 87, 0);
+        }
+        100% {
+          box-shadow: 0 0 0 0 rgba(255, 71, 87, 0);
+        }
+      }
+
+      /* CONTENT */
+      .main-content {
+        flex: 1;
+        padding: 40px;
+        overflow-y: auto;
+      }
+      header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 40px;
+      }
+      h2 {
+        font-size: 2rem;
+        margin: 0;
+      }
+
+      /* REQUEST CARD SEDERHANA (HANYA INFO) */
+      .grid-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+      }
+
+      .request-card {
+        background-color: var(--card-bg);
+        border-radius: 15px;
+        padding: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        transition: 0.3s;
+        cursor: pointer;
+        position: relative;
+      }
+      .request-card:hover {
+        transform: translateY(-5px);
+        border-color: var(--primary);
+      }
+
+      .req-cat {
+        color: var(--primary);
+        font-size: 0.8rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+        display: block;
+      }
+      .req-user {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 15px;
+      }
+      .req-user img {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+      }
+      .req-time {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+      }
+
+      .btn-review {
+        width: 100%;
+        padding: 10px;
+        background: rgba(255, 255, 255, 0.05);
+        border: none;
+        color: white;
+        border-radius: 8px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.2s;
+      }
+      .request-card:hover .btn-review {
+        background: var(--primary);
+        color: black;
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 50px;
+        color: var(--text-muted);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="sidebar">
+      <div class="logo">UI<span>CODE</span></div>
+      <div class="menu-item active" onclick="loadPending()">
+        <span>📝 Requests</span>
+        <span class="badge" id="pendingCount" style="display: none">0</span>
+      </div>
+      <div class="menu-item" onclick="window.location.href='index.html'">
+        ⬅ Back Home
+      </div>
+    </div>
+
+    <div class="main-content">
+      <header>
+        <div>
+          <h2>Dashboard</h2>
+          <div style="color: gray">Welcome back, Admin</div>
+        </div>
+      </header>
+
+      <div id="requestContainer" class="grid-container">
+        <div class="empty-state">Memuat data...</div>
+      </div>
+    </div>
+
+    <script>
+      const API_URL = "http://127.0.0.1:8000";
+      const container = document.getElementById("requestContainer");
+      const badge = document.getElementById("pendingCount");
+      const token = localStorage.getItem("uicode_token");
+
+      if (!token) window.location.href = "login.html";
+
+      async function loadPending() {
+        try {
+          const res = await fetch(`${API_URL}/admin/pending`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          const data = await res.json();
+
+          // Update Notif
+          if (data.length > 0) {
+            badge.style.display = "inline-block";
+            badge.innerText = data.length;
+          } else {
+            badge.style.display = "none";
+          }
+
+          renderList(data);
+        } catch (err) {
+          console.error(err);
+        }
+      }
+
+      function renderList(items) {
+        container.innerHTML = "";
+        if (items.length === 0) {
+          container.innerHTML = `<div class="empty-state">🎉 Tidak ada request baru.</div>`;
+          return;
+        }
+
+        items.forEach((item) => {
+          const card = document.createElement("div");
+          card.className = "request-card";
+          // Klik kartu -> Pindah ke Review
+          card.onclick = function () {
+            window.location.href = `review.html?id=${item.id}`;
+          };
+
+          const userName = item.owner ? item.owner.username : "User";
+          const avatar = `https://ui-avatars.com/api/?background=random&name=${userName}`;
+
+          card.innerHTML = `
+                    <span class="req-cat">${item.category}</span>
+                    <div class="req-user">
+                        <img src="${avatar}">
+                        <div>
+                            <div style="font-weight:bold">${userName}</div>
+                            <div class="req-time">ID: #${item.id}</div>
+                        </div>
+                    </div>
+                    <button class="btn-review">Review Code →</button>
+                `;
+          container.appendChild(card);
+        });
+      }
+
+      // Auto Refresh Notif (Polling 3 detik)
+      setInterval(loadPending, 3000);
+      loadPending();
+    </script>
+  </body>
+</html>

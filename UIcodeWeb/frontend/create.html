@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create UI - UICODE</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap");
+
+      :root {
+        --bg-color: #0f0f11;
+        --sidebar-bg: #18181b;
+        --primary: #00ff75;
+        --accent: #3700ff;
+        --text-main: #ffffff;
+        --text-muted: #a1a1aa;
+        --border-color: rgba(255, 255, 255, 0.1);
+      }
+
+      body {
+        font-family: "Outfit", sans-serif;
+        background-color: var(--bg-color);
+        color: var(--text-main);
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      /* --- NAVBAR (SAMA DENGAN INDEX.HTML) --- */
+      nav {
+        background: #18181b;
+        padding: 0 20px;
+        height: 60px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid var(--border-color);
+        z-index: 100;
+      }
+
+      .brand {
+        font-weight: 800;
+        font-size: 1.5rem;
+        color: #fff;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .brand span {
+        color: var(--primary);
+      }
+
+      .nav-actions {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      .btn {
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        border: none;
+        cursor: pointer;
+        transition: 0.2s;
+        text-decoration: none;
+      }
+
+      .btn-cancel {
+        background: transparent;
+        color: var(--text-muted);
+        border: 1px solid var(--border-color);
+      }
+      .btn-cancel:hover {
+        color: white;
+        border-color: white;
+      }
+
+      .btn-submit {
+        background: var(--accent);
+        color: white;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .btn-submit:hover {
+        background: #2a00e0;
+        box-shadow: 0 0 15px rgba(55, 0, 255, 0.4);
+      }
+
+      /* --- WORKSPACE LAYOUT --- */
+      .workspace {
+        display: flex;
+        flex: 1;
+        height: calc(100vh - 60px);
+        background-color: var(--bg-color);
+      }
+
+      /* PREVIEW AREA (KIRI - DOMINAN) */
+      .preview-pane {
+        flex: 4; /* Mengisi sisa ruang */
+        background-color: #000;
+        background-image: linear-gradient(#1a1a1a 1px, transparent 1px),
+          linear-gradient(90deg, #1a1a1a 1px, transparent 1px);
+        background-size: 20px 20px;
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-right: 1px solid var(--border-color);
+      }
+
+      iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+      }
+
+      /* EDITOR AREA (KANAN - FIXED WIDTH) */
+      .editor-pane {
+        flex: 6;
+        width: auto; /* Lebar panel kode */
+        background-color: var(--sidebar-bg);
+        display: flex;
+        flex-direction: column;
+        border-left: 1px solid var(--border-color);
+      }
+
+      /* EDITOR HEADER (CATEGORY SELECTOR) */
+      .editor-header {
+        padding: 15px;
+        border-bottom: 1px solid var(--border-color);
+        background: #1f1f23;
+      }
+
+      .input-group label {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        font-weight: bold;
+        display: block;
+        margin-bottom: 8px;
+        letter-spacing: 1px;
+      }
+
+      .styled-select {
+        width: 100%;
+        padding: 10px;
+        background-color: #121212;
+        border: 1px solid var(--border-color);
+        color: white;
+        border-radius: 8px;
+        outline: none;
+        cursor: pointer;
+        font-family: "Outfit", sans-serif;
+      }
+      .styled-select:focus {
+        border-color: var(--primary);
+      }
+
+      /* CODE BOXES */
+      .code-container {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      .code-section {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        border-bottom: 1px solid var(--border-color);
+      }
+      .code-section:last-child {
+        border-bottom: none;
+      }
+
+      .section-title {
+        background: #27272a;
+        padding: 8px 15px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .lang-badge {
+        color: var(--primary);
+      }
+      .lang-badge.css {
+        color: #3700ff;
+      }
+
+      textarea {
+        flex: 1;
+        background-color: #141419;
+        color: #e0e0e0;
+        border: none;
+        padding: 15px;
+        font-family: "Consolas", "Monaco", monospace;
+        font-size: 13px;
+        line-height: 1.5;
+        resize: none;
+        outline: none;
+      }
+      textarea:focus {
+        background-color: #0f0f12;
+      }
+
+      /* FLOATING BADGE */
+      .preview-badge {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        background: rgba(0, 0, 0, 0.6);
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        border: 1px solid var(--border-color);
+        pointer-events: none;
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <div class="brand">
+        UI<span>CODE</span>
+        <span style="color: #555; font-size: 1rem; font-weight: 400"
+          >/ Creator Studio</span
+        >
+      </div>
+      <div class="nav-actions">
+        <a href="index.html" class="btn btn-cancel">Cancel</a>
+        <button class="btn btn-submit" onclick="submitToAdmin()">
+          <svg
+            width="16"
+            height="16"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"></path>
+          </svg>
+          <span>send to Admin</span>
+        </button>
+      </div>
+    </nav>
+
+    <div class="workspace">
+      <div class="preview-pane">
+        <div class="preview-badge">Live Preview</div>
+        <iframe id="previewFrame"></iframe>
+      </div>
+
+      <div class="editor-pane">
+        <div class="editor-header">
+          <div class="input-group">
+            <label>COMPONENT CATEGORY</label>
+            <select id="category" class="styled-select">
+              <option value="Button">Button</option>
+              <option value="Checkbox">Checkbox</option>
+              <option value="Toggle">Toggle Switch</option>
+              <option value="Card">Card</option>
+              <option value="Input">Input Field</option>
+              <option value="Loader">Loader</option>
+              <option value="Radio">Radio Button</option>
+              <option value="Form">Form</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="code-container">
+          <div class="code-section">
+            <div class="section-title">
+              <span>STRUCTURE</span>
+              <span class="lang-badge">HTML</span>
+            </div>
+            <textarea id="htmlInput" placeholder="">
+<button class="uiverse-btn">
+  <span>Hover Me</span>
+</button></textarea
+            >
+          </div>
+
+          <div class="code-section">
+            <div class="section-title">
+              <span>STYLING</span>
+              <span class="lang-badge css">CSS</span>
+            </div>
+            <textarea id="cssInput" placeholder="/* Masukkan CSS di sini */">
+.uiverse-btn {
+  padding: 12px 24px;
+  background: #3700ff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.uiverse-btn:hover {
+  background: #00ff75;
+  color: black;
+  box-shadow: 0 0 15px #00ff75;
+}</textarea
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const API_URL = "http://127.0.0.1:8000";
+      const token = localStorage.getItem("uicode_token");
+
+      // 1. Cek Login
+      if (!token) {
+        alert("⚠️ Harap Login dulu untuk membuat karya!");
+        window.location.href = "login.html";
+      }
+
+      // 2. Logic Preview Real-time
+      const htmlInput = document.getElementById("htmlInput");
+      const cssInput = document.getElementById("cssInput");
+      const previewFrame = document.getElementById("previewFrame");
+
+      function updatePreview() {
+        const html = htmlInput.value;
+        const css = cssInput.value;
+
+        // Template HTML untuk Iframe (Centering Content)
+        const content = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <style>
+                        body { 
+                            margin: 0; 
+                            display: flex; 
+                            justify-content: center; 
+                            align-items: center; 
+                            min-height: 100vh; 
+                            font-family: 'Segoe UI', sans-serif;
+                            overflow: hidden;
+                        }
+                        /* Inject User CSS */
+                        ${css}
+                    </style>
+                </head>
+                <body>
+                    ${html}
+                </body>
+                </html>
+            `;
+
+        const doc =
+          previewFrame.contentDocument || previewFrame.contentWindow.document;
+        doc.open();
+        doc.write(content);
+        doc.close();
+      }
+
+      // Event Listeners (Update saat ngetik)
+      htmlInput.addEventListener("keyup", updatePreview);
+      cssInput.addEventListener("keyup", updatePreview);
+
+      // Init awal
+      updatePreview();
+
+      // 3. Logic Submit
+      async function submitToAdmin() {
+        const category = document.getElementById("category").value;
+        const htmlCode = htmlInput.value;
+        const cssCode = cssInput.value;
+
+        if (!htmlCode.trim()) {
+          alert("❌ Kode HTML tidak boleh kosong!");
+          return;
+        }
+
+        const btn = document.querySelector(".btn-submit");
+        const originalText = btn.innerHTML;
+        btn.innerText = "Publishing...";
+        btn.disabled = true;
+
+        try {
+          const response = await fetch(`${API_URL}/components/`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              category: category,
+              html_code: htmlCode,
+              css_code: cssCode,
+            }),
+          });
+
+          if (response.ok) {
+            // Sukses!
+            const result = await response.json();
+            alert(`✅ Berhasil! Karya #${result.id} telah dikirim ke Admin.`);
+            window.location.href = "index.html";
+          } else {
+            const errData = await response.json();
+            alert(
+              "❌ Gagal: " + (errData.detail || "Terjadi kesalahan server")
+            );
+          }
+        } catch (err) {
+          console.error(err);
+          alert("❌ Error koneksi ke server.");
+        } finally {
+          btn.innerHTML = originalText;
+          btn.disabled = false;
+        }
+      }
+    </script>
+  </body>
+</html>
