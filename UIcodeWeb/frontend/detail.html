@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get Code - UICODE</title>
+    <style>
+        @import url("https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap");
+        
+        :root {
+            --bg-color: #0f0f11; 
+            --sidebar-bg: #18181b; 
+            --primary: #00ff75; 
+            --accent: #3700ff;
+            --text-main: #ffffff;
+            --text-muted: #a1a1aa;
+            --border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            font-family: "Outfit", sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* --- NAVBAR --- */
+        nav {
+            background: #18181b;
+            padding: 0 20px;
+            height: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            z-index: 100;
+        }
+
+        .brand { font-weight: 800; font-size: 1.5rem; color: #fff; text-decoration: none; display: flex; align-items: center; gap: 5px; }
+        .brand span { color: var(--primary); }
+
+        .btn-back {
+            background: transparent; color: var(--text-muted); border: 1px solid var(--border-color);
+            padding: 8px 16px; border-radius: 8px; font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: 0.2s; text-decoration: none;
+        }
+        .btn-back:hover { color: white; border-color: white; }
+
+        /* --- WORKSPACE --- */
+        .workspace { display: flex; flex: 1; height: calc(100vh - 60px); background-color: var(--bg-color); }
+
+        /* PREVIEW AREA (KIRI) */
+        .preview-pane {
+            flex: 4;
+            background-color: #000;
+            background-image: 
+                linear-gradient(#1a1a1a 1px, transparent 1px), 
+                linear-gradient(90deg, #1a1a1a 1px, transparent 1px);
+            background-size: 20px 20px;
+            position: relative;
+            display: flex; justify-content: center; align-items: center;
+            border-right: 1px solid var(--border-color);
+        }
+        iframe { width: 100%; height: 100%; border: none; }
+
+        /* INFO & CODE AREA (KANAN) */
+        .editor-pane {
+            flex: 6; width: auto; background-color: var(--sidebar-bg);
+            display: flex; flex-direction: column;
+            border-left: 1px solid var(--border-color);
+        }
+
+        /* --- HEADER INFO (CREATOR & STAR) --- */
+        .info-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            background: #1f1f23;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+
+        .creator-profile { display: flex; align-items: center; gap: 12px; }
+        .avatar { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); }
+        .meta { display: flex; flex-direction: column; }
+        .creator-name { font-weight: 700; font-size: 1.1rem; color: white; }
+        .category-badge { font-size: 0.75rem; color: var(--primary); text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
+
+        .stats-badge {
+            display: flex; align-items: center; gap: 8px;
+            background: rgba(255, 255, 255, 0.05); padding: 8px 15px; border-radius: 50px; border: 1px solid var(--border-color);
+        }
+        .stats-badge svg { width: 20px; height: 20px; fill: #ff4757; } /* Warna Merah Hati/Bintang */
+        .stats-count { font-weight: 800; font-size: 1rem; color: white; }
+
+        /* --- CODE BOXES --- */
+        .code-container { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .code-section { flex: 1; display: flex; flex-direction: column; border-bottom: 1px solid var(--border-color); }
+        .code-section:last-child { border-bottom: none; }
+
+        .section-title {
+            background: #27272a; padding: 8px 15px; font-size: 0.75rem; font-weight: 700; color: var(--text-muted);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .lang-badge { color: var(--primary); }
+        .lang-badge.css { color: #3700ff; }
+
+        /* Tombol Copy Kecil di Header Code */
+        .btn-copy-small {
+            background: rgba(255,255,255,0.1); border: none; color: white; padding: 4px 10px; border-radius: 4px;
+            font-size: 0.7rem; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 5px;
+        }
+        .btn-copy-small:hover { background: var(--primary); color: black; }
+
+        textarea {
+            flex: 1; background-color: #141419; color: #e0e0e0; border: none; padding: 15px;
+            font-family: 'Consolas', 'Monaco', monospace; font-size: 13px; line-height: 1.5;
+            resize: none; outline: none;
+        }
+        
+        /* Floating Badge */
+        .preview-badge {
+            position: absolute; top: 20px; left: 20px;
+            background: rgba(0,0,0,0.6); padding: 5px 12px; border-radius: 20px;
+            font-size: 0.75rem; color: var(--text-muted); border: 1px solid var(--border-color); pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="brand">
+            UI<span>CODE</span> <span style="color: #555; font-size: 1rem; font-weight: 400">/ Get Code</span>
+        </div>
+        <div class="nav-actions">
+            <button class="btn-back" onclick="window.location.href='index.html'">Back to Gallery</button>
+        </div>
+    </nav>
+
+    <div class="workspace">
+        <div class="preview-pane">
+            <div class="preview-badge">Live Preview</div>
+            <iframe id="previewFrame"></iframe>
+        </div>
+
+        <div class="editor-pane">
+            
+            <div class="info-header">
+                <div class="creator-profile">
+                    <img src="" id="creatorAvatar" class="avatar">
+                    <div class="meta">
+                        <span class="creator-name" id="creatorName">Loading...</span>
+                        <span class="category-badge" id="categoryName">...</span>
+                    </div>
+                </div>
+                
+                <div class="stats-badge">
+                    <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                    <span class="stats-count" id="likeCount">0</span>
+                </div>
+            </div>
+
+            <div class="code-container">
+                
+                <div class="code-section">
+                    <div class="section-title">
+                        <span><span class="lang-badge">HTML</span> STRUCTURE</span>
+                        <button class="btn-copy-small" onclick="copyCode('htmlInput')">📋 Copy HTML</button>
+                    </div>
+                    <textarea id="htmlInput" readonly></textarea>
+                </div>
+
+                <div class="code-section">
+                    <div class="section-title">
+                        <span><span class="lang-badge css">CSS</span> STYLING</span>
+                        <button class="btn-copy-small" onclick="copyCode('cssInput')">📋 Copy CSS</button>
+                    </div>
+                    <textarea id="cssInput" readonly></textarea>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "http://127.0.0.1:8000";
+        
+        // 1. Ambil ID dari URL (detail.html?id=5)
+        const urlParams = new URLSearchParams(window.location.search);
+        const compId = urlParams.get('id');
+
+        if (!compId) {
+            alert("ID Komponen tidak ditemukan!");
+            window.location.href = "index.html";
+        }
+
+        // 2. Fetch Data dari API
+        async function loadData() {
+            try {
+                // Kita bisa akses endpoint public ini tanpa token (sesuai update main.py terakhir)
+                const res = await fetch(`${API_URL}/components/${compId}`);
+                if(!res.ok) throw new Error("Gagal mengambil data");
+                
+                const data = await res.json();
+
+                // Isi Data UI
+                document.getElementById('creatorName').innerText = data.owner.username;
+                document.getElementById('categoryName').innerText = data.category;
+                document.getElementById('likeCount').innerText = data.likes_count;
+                
+                // Avatar Creator
+                const avatar = data.owner.avatar_url || `https://ui-avatars.com/api/?background=random&name=${data.owner.username}`;
+                document.getElementById('creatorAvatar').src = avatar;
+
+                // Isi Kode
+                document.getElementById('htmlInput').value = data.html_code;
+                document.getElementById('cssInput').value = data.css_code;
+
+                // Render Preview
+                updatePreview(data.html_code, data.css_code);
+
+            } catch (err) {
+                console.error(err);
+                alert("Gagal memuat komponen.");
+                window.location.href = "index.html";
+            }
+        }
+
+        // 3. Render Iframe Preview
+        function updatePreview(html, css) {
+            const previewFrame = document.getElementById('previewFrame');
+            const content = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <style>
+                        body { 
+                            margin: 0; display: flex; justify-content: center; align-items: center; 
+                            min-height: 100vh; font-family: 'Segoe UI', sans-serif; overflow: hidden;
+                        }
+                        ${css}
+                    </style>
+                </head>
+                <body>
+                    ${html}
+                </body>
+                </html>
+            `;
+            const doc = previewFrame.contentDocument || previewFrame.contentWindow.document;
+            doc.open(); doc.write(content); doc.close();
+        }
+
+        // 4. Fitur Copy Code
+        function copyCode(elementId) {
+            const copyText = document.getElementById(elementId);
+            copyText.select();
+            copyText.setSelectionRange(0, 99999); // Untuk mobile
+            navigator.clipboard.writeText(copyText.value).then(() => {
+                alert("Kode berhasil disalin!");
+            });
+        }
+
+        loadData();
+    </script>
+</body>
+</html>
