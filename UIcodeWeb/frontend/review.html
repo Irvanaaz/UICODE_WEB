@@ -122,15 +122,13 @@
 
       /* AREA KODE (KIRI 70%) */
       .editor-pane {
-        width: 70%; /* PERMINTAAN KAMU: 70% */
+        width: 70%; /* 70% Code */
         background-color: #1e1e24;
         display: flex;
         flex-direction: column;
         border-right: 1px solid #333;
       }
 
-      /* Container HTML & CSS (Atas Bawah atau Kiri Kanan) */
-      /* Kita buat berdampingan agar memanfaatkan lebar 70% */
       .code-container {
         display: flex;
         flex: 1;
@@ -138,7 +136,7 @@
       }
 
       .code-box {
-        flex: 1; /* Bagi 2 rata antara HTML dan CSS */
+        flex: 1;
         display: flex;
         flex-direction: column;
         border-right: 1px solid #333;
@@ -178,7 +176,7 @@
 
       /* AREA PREVIEW (KANAN 30%) */
       .preview-pane {
-        width: 30%; /* SISANYA 30% */
+        width: 30%; /* 30% Preview */
         background-color: #000;
         background-image: linear-gradient(#1a1a1a 1px, transparent 1px),
           linear-gradient(90deg, #1a1a1a 1px, transparent 1px);
@@ -266,7 +264,6 @@
       const API_URL = "http://127.0.0.1:8000";
       const token = localStorage.getItem("uicode_token");
 
-      // 1. Ambil ID dari URL
       const urlParams = new URLSearchParams(window.location.search);
       const compId = urlParams.get("id");
 
@@ -275,7 +272,6 @@
         window.location.href = "admin.html";
       }
 
-      // 2. Load Data Komponen
       async function loadComponentData() {
         try {
           const res = await fetch(`${API_URL}/components/${compId}`, {
@@ -286,7 +282,7 @@
 
           const data = await res.json();
 
-          // Isi Data ke Header
+          // Isi Data ke Header (Hanya Nama & Kategori)
           document.getElementById("reqId").innerText = `#${data.id}`;
           document.getElementById("creatorName").innerText =
             data.owner.username;
@@ -296,7 +292,6 @@
           document.getElementById("htmlInput").value = data.html_code;
           document.getElementById("cssInput").value = data.css_code;
 
-          // Update Preview
           updatePreview(data.html_code, data.css_code);
         } catch (err) {
           alert("Error: " + err.message);
@@ -304,7 +299,6 @@
         }
       }
 
-      // 3. Fungsi Preview Iframe (Center Content)
       function updatePreview(html, css) {
         const previewFrame = document.getElementById("previewFrame");
         const content = `
@@ -337,7 +331,6 @@
         doc.close();
       }
 
-      // 4. Proses Approve/Reject
       async function processReview(action) {
         if (!confirm(`Yakin ingin ${action.toUpperCase()} request ini?`))
           return;
@@ -352,7 +345,6 @@
           );
 
           if (res.ok) {
-            // Beri feedback visual sedikit
             alert(`✅ Sukses! Request #${compId} telah di-${action}.`);
             window.location.href = "admin.html";
           } else {
